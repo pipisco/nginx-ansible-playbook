@@ -1,0 +1,8 @@
+---
+# Debian OS
+- name: Install nginx server
+  apt:
+    name: nginx
+    state: present
+  tags:
+    - install

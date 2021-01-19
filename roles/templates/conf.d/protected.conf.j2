@@ -1,0 +1,56 @@
+# Protected templates
+# {{ ansible_managed }}
+
+location ~* (?:\.(?:bak|config|sql|fla|db|psd|ini|log|sh|inc|swp|dist|git)|~)$ {
+    deny all;
+    access_log denied;
+    log_not_found off;
+    return 404;
+}
+
+location ~* "/(engine|inc|protected|framework|themes/\w+/views|data|conf|config|bin|info|install|module|profile|theme|/bitrix/modules|/upload/support/not_image|/bitrix/php_interface)((/.*)?)$" {
+    deny all;
+    access_log denied;
+    log_not_found off;
+    return 404;
+}
+
+location ~* "/\.(htaccess|htpasswd)$" {
+    deny all;
+    access_log denied;
+    log_not_found off;
+    return 404;
+}
+
+location ~ /\.ht {
+    deny all;
+    access_log denied;
+    log_not_found off;
+    return 404;
+}
+
+location ~ .*\.svn.* {
+    deny all;
+    access_log denied;
+    log_not_found off;
+    return 404;
+}
+
+location ~ .*\.git.* {
+    deny all;
+    access_log denied;
+    log_not_found off;
+    return 404;
+}
+
+if ($http_user_agent ~* LWP::Simple|BBBike|wget) {
+    return 403;
+}
+
+if ($http_user_agent ~* msnbot|scrapbot) {
+    return 403;
+}
+
+if ($http_user_agent ~* "Feedfetcher-Google") {
+    return 403;
+}

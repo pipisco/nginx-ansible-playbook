@@ -1,0 +1,6 @@
+# Nginx
+nginx_worker_processes: 100
+nginx_owner: nginx
+nginx_group: nginx
+sites_enabled:
+  - cs.k8.com.conf

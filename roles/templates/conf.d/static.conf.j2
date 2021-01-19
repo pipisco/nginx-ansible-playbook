@@ -1,0 +1,39 @@
+# Static template
+# {{ ansible_managed }}
+
+location ~* \.(?:jpg|jpeg|gif|png|ico|svg|svgz|js|css|less|eot|ttf|woff|otf|scss|swf|xml|wmv|html|htm|avi)$ {
+  gzip_static on;
+  expires 30d;
+  access_log off;
+  add_header Cache-Control "public";
+}
+
+location ~* \.(?:ogg|ogv|webm|htc)$ {
+  expires 30d;
+  access_log off;
+  add_header Cache-Control "public";
+}
+
+location ~* \.(?:mp4)$ {
+  expires 30d;
+  access_log off;
+  add_header Cache-Control "public";
+  mp4;
+  mp4_buffer_size 1m;
+  mp4_max_buffer_size 5m;
+}
+
+location ~* \.(?:flv)$ {
+  flv;
+}
+
+location = /favicon.ico {
+  log_not_found off;
+  access_log off;
+}
+
+location = /robots.txt {
+  allow all;
+  log_not_found off;
+  access_log off;
+}

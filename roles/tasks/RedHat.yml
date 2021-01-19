@@ -1,0 +1,8 @@
+---
+# RedHat OS
+- name: Install nginx server
+  yum:
+    name: nginx
+    state: present
+  tags:
+    - install

@@ -1,0 +1,38 @@
+---
+# Nginx
+nginx_conf_dir: "/etc/nginx"
+nginx_log_dir: "/var/log/nginx"
+nginx_timer_resolution: 100ms
+nginx_worker_processes: 2
+nginx_worker_rlimit_nofile: 300000
+nginx_error_log: /var/log/nginx/error.log crit
+nginx_access_log: "off"
+nginx_pid: /var/run/nginx.pid
+nginx_events_worker_connections: 10240
+nginx_events_use: epoll
+nginx_server_tokens: "off"
+nginx_server_names_hash_max_size: 4096
+nginx_server_names_hash_bucket_size: 512
+nginx_client_max_body_size: 512m
+nginx_client_body_buffer_size: 128k
+nginx_variables_hash_max_size: 2048
+nginx_variables_hash_bucket_size: 256
+nginx_open_file_cache: max=200000 inactive=20s
+nginx_open_file_cache_valid: 30s
+nginx_open_file_cache_min_uses: 2
+nginx_open_file_cache_errors: "on"
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+nginx_keepalive_timeout: 20
+nginx_keepalive_requests: 100
+nginx_reset_timedout_connection: "on"
+nginx_client_body_timeout: 10
+nginx_send_timeout: 2
+nginx_gzip: "on"
+nginx_gzip_http_version: 1.1
+nginx_gzip_comp_level: 5
+nginx_gzip_min_length: 1024
+nginx_gzip_proxied: expired no-cache no-store private auth
+nginx_gzip_vary: "on"
+nginx_gzip_disable: msie6

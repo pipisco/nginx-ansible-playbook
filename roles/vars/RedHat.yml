@@ -1,0 +1,4 @@
+---
+# Debian variables
+nginx_owner: nginx
+nginx_group: nginx

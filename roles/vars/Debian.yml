@@ -1,0 +1,4 @@
+---
+# Debian variables
+nginx_owner: www-data
+nginx_group: www-data

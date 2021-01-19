@@ -1,0 +1,224 @@
+---
+# Nginx
+
+- include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/{{ ansible_os_family }}.yml"
+    - "vars/empty.yml"
+  tags: [always]
+
+- name: Install nginx server on RedHat OS
+  include: "RedHat.yml"
+  when: ansible_os_family == "RedHat"
+  tags:
+    - install
+
+- name: Install nginx server on Debian OS
+  include: "Debian.yml"
+  when: ansible_os_family == "Debian"
+  tags:
+    - install
+
+- name: Clean orig nginx path
+  when: sites_enabled is defined
+  file:
+    state: absent
+    path: /etc/orig.nginx
+  tags:
+    - install
+
+- name: Destroy default nginx tree
+  command: mv {{ nginx_conf_dir }} /etc/orig.nginx
+  tags:
+    - install
+
+- name: Creates nginx directory
+  file:
+    path: "{{ nginx_conf_dir }}"
+    state: directory
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0755
+  tags:
+    - install
+
+- name: Create the directories for site specific configurations
+  file:
+    path: "{{ nginx_conf_dir }}/{{ item }}"
+    state: directory
+    owner: root
+    group: "{{nginx_group}}"
+    mode: 0755
+  with_items:
+    - "sites-available"
+    - "sites-enabled"
+    - "auth_basic"
+    - "conf.d"
+    - "default.d"
+    - "geo"
+  tags:
+    - install
+
+- name: Ensure log directory exist
+  file:
+    path: "{{ nginx_log_dir }}"
+    state: directory
+    owner: "{{ nginx_owner }}"
+    group: "{{ nginx_group }}"
+    mode: 0755
+  tags:
+    - install
+
+- name: Copy main nginx configuration in place
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_conf_dir }}/nginx.conf"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy fastcgi params in place
+  template:
+    src: fastcgi_params.j2
+    dest: "{{ nginx_conf_dir }}/fastcgi_params"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy fastcgi configure in place
+  template:
+    src: fastcgi.conf.j2
+    dest: "{{ nginx_conf_dir }}/fastcgi.conf"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy koi-utf configure in place
+  template:
+    src: koi-utf.j2
+    dest: "{{ nginx_conf_dir }}/koi-utf"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy koi-win configure in place
+  template:
+    src: koi-win.j2
+    dest: "{{ nginx_conf_dir }}/koi-win"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy mime.types configure in place
+  template:
+    src: mime.types.j2
+    dest: "{{ nginx_conf_dir }}/mime.types"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy scgi_params configure in place
+  template:
+    src: scgi_params.j2
+    dest: "{{ nginx_conf_dir }}/scgi_params"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy uwsgi_params configure in place
+  template:
+    src: uwsgi_params.j2
+    dest: "{{ nginx_conf_dir }}/uwsgi_params"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy uwsgi_params configure in place
+  template:
+    src: win-utf.j2
+    dest: "{{ nginx_conf_dir }}/win-utf"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy protected.conf configure in place
+  template:
+    src: conf.d/protected.conf.j2
+    dest: "{{ nginx_conf_dir }}/conf.d/protected.conf"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Copy static.conf configure in place
+  template:
+    src: conf.d/static.conf.j2
+    dest: "{{ nginx_conf_dir }}/conf.d/static.conf"
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0644
+  tags:
+    - configure
+
+- name: Start the nginx service
+  service: name=nginx state=started enabled=yes
+  tags:
+    - service
+    - nginx
+
+- name: install sites-available
+  copy: src={{ item }} dest=/etc/nginx/sites-available/
+  with_fileglob:
+    - "{{ inventory_hostname }}/sites-available/*"
+  notify: reload nginx
+  tags:
+    - update-sites
+
+- name: Clean sites_enabled path
+  when: sites_enabled is defined
+  file:
+    state: absent
+    path: /etc/nginx/sites-enabled/
+  tags:
+    - update-sites
+
+- name: Creates sites_enabled directory
+  file:
+    path: /etc/nginx/sites-enabled/
+    state: directory
+    owner: root
+    group: "{{ nginx_group }}"
+    mode: 0755
+  tags:
+    - update-sites
+
+- name: set up sites-enabled
+  when: sites_enabled is defined
+  file:
+    src="/etc/nginx/sites-available/{{ item }}"
+    dest="/etc/nginx/sites-enabled/{{ item }}"
+    force=yes
+    state=link
+  with_items: "{{ sites_enabled }}"
+  notify: reload nginx
+  tags:
+    - update-sites
